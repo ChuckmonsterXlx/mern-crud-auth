@@ -3,6 +3,10 @@ import User from "../models/user.model";
 import bcrypt from "bcryptjs";
 import { createAccessToken } from "../libs/jwt";
 
+interface AuthenticatedRequest extends Request {
+  user?: any;
+}
+
 export const register = async (req: Request, res: Response) => {
   const { userName, email, password } = req.body;
 
@@ -76,4 +80,26 @@ export const logout = (_req: Request, res: Response) => {
   });
   res.sendStatus(200);
   return;
+};
+
+export const profile = async (req: AuthenticatedRequest, res: Response) => {
+  const userFound = await User.findById(req.user.id);
+
+  if (!userFound) {
+    res.status(400).json({
+      message: "User not found",
+    });
+
+    return;
+  } else {
+    res.json({
+      id: userFound._id,
+      userName: userFound.userName,
+      email: userFound.email,
+      createdAt: userFound.createdAt,
+      updatedAt: userFound.updatedAt,
+    });
+
+    return;
+  }
 };
