@@ -8,13 +8,13 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const register = async (req: Request, res: Response) => {
-  const { userName, email, password } = req.body;
+  const { username, email, password } = req.body;
 
   try {
     const passwordHash = await bcrypt.hash(password, 10);
 
     const newUser = new User({
-      userName: userName,
+      username: username,
       email: email,
       password: passwordHash,
     });
@@ -25,7 +25,7 @@ export const register = async (req: Request, res: Response) => {
     res.cookie("token", token);
     res.send({
       id: userSaved._id,
-      userName: userSaved.userName,
+      username: userSaved.username,
       email: userSaved.email,
       createdAt: userSaved.createdAt,
       updatedAt: userSaved.updatedAt,
@@ -64,7 +64,7 @@ export const login = async (req: Request, res: Response) => {
     res.cookie("token", token);
     res.send({
       id: userFound._id,
-      userName: userFound.userName,
+      username: userFound.username,
       email: userFound.email,
       createdAt: userFound.createdAt,
       updatedAt: userFound.updatedAt,
@@ -94,7 +94,7 @@ export const profile = async (req: AuthenticatedRequest, res: Response) => {
   } else {
     res.json({
       id: userFound._id,
-      userName: userFound.userName,
+      username: userFound.username,
       email: userFound.email,
       createdAt: userFound.createdAt,
       updatedAt: userFound.updatedAt,
