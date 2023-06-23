@@ -1,5 +1,6 @@
 import { createContext, useState, ReactNode } from "react";
 import { registerRequest } from "../api/auth";
+import { AxiosError } from "axios";
 
 interface User {
   username: string;
@@ -11,6 +12,7 @@ export interface AuthContextProps {
   signup: (user: object) => Promise<void>;
   user: User | null;
   isAuthenticated: boolean;
+  errors: [] | null;
 }
 
 interface AuthProviderProps {
@@ -22,6 +24,7 @@ export const AuthContext = createContext<AuthContextProps | null>(null);
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [errors, setErrors] = useState<[] | null>(null);
 
   const signup = async (user: object) => {
     try {
@@ -29,8 +32,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log(res.data);
       setUser(res.data);
       setIsAuthenticated(true);
-    } catch (error: unknown) {
-      console.log(error);
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log(error.response?.data);
+        setErrors(error.response?.data);
+      }
     }
   };
 
@@ -40,6 +46,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         signup,
         user,
         isAuthenticated,
+        errors,
       }}
     >
       {children}
