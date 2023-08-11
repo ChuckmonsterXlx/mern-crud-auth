@@ -1,6 +1,7 @@
 import { createContext, useState, ReactNode, useEffect } from "react";
-import { registerRequest, loginRequest } from "../api/auth";
+import { registerRequest, loginRequest, verifyTokenRequest } from "../api/auth";
 import { AxiosError } from "axios";
+import Cookies from "js-cookie";
 
 interface User {
   username: string;
@@ -11,6 +12,7 @@ interface User {
 export interface AuthContextProps {
   signup: (user: object) => Promise<void>;
   signin: (user: object) => Promise<void>;
+  loading: boolean;
   user: User | null;
   isAuthenticated: boolean;
   errors: string[] | null;
@@ -26,6 +28,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[] | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const signup = async (user: object) => {
     try {
@@ -43,6 +46,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const res = await loginRequest(user);
       console.log(res);
+      setUser(res.data);
+      setIsAuthenticated(true);
     } catch (error) {
       console.log(error);
       if (error instanceof AxiosError) {
@@ -51,6 +56,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         setErrors([error.response?.data.message]);
       }
+    }
+  };
+
+  const checkLogin = async () => {
+    const cookies = Cookies.get();
+
+    if (!cookies.token) {
+      setUser(null);
+      setIsAuthenticated(false);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await verifyTokenRequest(cookies.token);
+      console.log(response);
+      if (!response.data) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
+
+      setUser(response.data);
+      setIsAuthenticated(true);
+      setLoading(false);
+    } catch (error) {
+      setUser(null);
+      setIsAuthenticated(false);
+      setLoading(false);
     }
   };
 
@@ -63,11 +97,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [errors]);
 
+  useEffect(() => {
+    checkLogin();
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
         signup,
         signin,
+        loading,
         user,
         isAuthenticated,
         errors,
