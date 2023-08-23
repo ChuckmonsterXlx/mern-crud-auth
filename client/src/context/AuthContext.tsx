@@ -12,6 +12,7 @@ interface User {
 export interface AuthContextProps {
   signup: (user: object) => Promise<void>;
   signin: (user: object) => Promise<void>;
+  logout: () => Promise<void>;
   loading: boolean;
   user: User | null;
   isAuthenticated: boolean;
@@ -57,6 +58,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setErrors([error.response?.data.message]);
       }
     }
+  };
+
+  const logout = async () => {
+    Cookies.remove("token");
+    setIsAuthenticated(false);
+    setUser(null);
   };
 
   const checkLogin = async () => {
@@ -106,6 +113,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       value={{
         signup,
         signin,
+        logout,
         loading,
         user,
         isAuthenticated,
