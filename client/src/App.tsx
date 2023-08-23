@@ -10,12 +10,14 @@ import HomePage from "./pages/HomePage";
 
 import ProtectedRoute from "./ProtectedRoute";
 import { TasksProvider } from "./context/TasksContext";
+import Navbar from "./components/navbar/Navbar";
 
 function App() {
   return (
     <AuthProvider>
       <TasksProvider>
         <BrowserRouter>
+          <Navbar />
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
