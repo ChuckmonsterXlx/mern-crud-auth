@@ -1,10 +1,16 @@
 import { ReactNode, createContext, useContext, useState } from "react";
-import { createTaskRequest, getTasksRequest } from "../api/tasks";
+import {
+  createTaskRequest,
+  getTasksRequest,
+  deleteTaskRequest,
+} from "../api/tasks";
+import ITask from "../contracts/ITask";
 
 export interface TasksContextProps {
-  tasks: [];
-  createTask: (task: any) => void;
+  tasks: ITask[];
+  createTask: (task: ITask) => void;
   getTasks: () => void;
+  deleteTask: (id: string) => void;
 }
 
 interface TasksProviderProps {
@@ -24,11 +30,10 @@ export const useTasks = () => {
 };
 
 export const TasksProvider = ({ children }: TasksProviderProps) => {
-  const [tasks, setTasks] = useState<[]>([]);
+  const [tasks, setTasks] = useState<ITask[]>([]);
 
-  const createTask = async (task: any) => {
+  const createTask = async (task: ITask) => {
     const res = await createTaskRequest(task);
-    console.log("res", res);
   };
 
   const getTasks = async () => {
@@ -40,8 +45,20 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
     }
   };
 
+  const deleteTask = async (id: string) => {
+    try {
+      const res = await deleteTaskRequest(id);
+
+      if (res.status === 204) {
+        setTasks(tasks.filter((task: ITask) => task._id != id));
+      }
+    } catch (error) {
+      throw new Error("Error deleting task");
+    }
+  };
+
   return (
-    <TasksContext.Provider value={{ tasks, createTask, getTasks }}>
+    <TasksContext.Provider value={{ tasks, createTask, getTasks, deleteTask }}>
       {children}
     </TasksContext.Provider>
   );
