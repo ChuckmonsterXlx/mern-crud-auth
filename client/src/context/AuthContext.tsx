@@ -46,11 +46,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const signin = async (user: object) => {
     try {
       const res = await loginRequest(user);
-      console.log(res);
       setUser(res.data);
       setIsAuthenticated(true);
     } catch (error) {
-      console.log(error);
       if (error instanceof AxiosError) {
         if (Array.isArray(error.response?.data)) {
           return setErrors(error.response?.data as []);
@@ -78,7 +76,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     try {
       const response = await verifyTokenRequest(cookies.token);
-      console.log(response);
       if (!response.data) {
         setIsAuthenticated(false);
         setLoading(false);
