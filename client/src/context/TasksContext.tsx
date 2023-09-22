@@ -3,13 +3,19 @@ import {
   createTaskRequest,
   getTasksRequest,
   deleteTaskRequest,
+  getTaskRequest,
+  updateTaskRequest,
 } from "../api/tasks";
 import ITask from "../contracts/ITask";
+import ICreateTask from "../contracts/tasks/ICreateTask";
+import IUpdateTask from "../contracts/tasks/IUpdateTask";
 
 export interface TasksContextProps {
   tasks: ITask[];
-  createTask: (task: ITask) => void;
+  createTask: (task: ICreateTask) => Promise<void>;
   getTasks: () => void;
+  getTask: (id: string) => Promise<ITask>;
+  updateTask: (id: string, task: IUpdateTask) => Promise<void>;
   deleteTask: (id: string) => void;
 }
 
@@ -32,8 +38,12 @@ export const useTasks = () => {
 export const TasksProvider = ({ children }: TasksProviderProps) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
 
-  const createTask = async (task: ITask) => {
-    const res = await createTaskRequest(task);
+  const createTask = async (task: ICreateTask) => {
+    try {
+      await createTaskRequest(task);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getTasks = async () => {
@@ -42,6 +52,23 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
       setTasks(res.data);
     } catch (error) {
       throw new Error("Error setting tasks");
+    }
+  };
+
+  const getTask = async (id: string) => {
+    try {
+      const res = await getTaskRequest(id);
+      return res.data;
+    } catch (error) {
+      throw new Error("Error getting task");
+    }
+  };
+
+  const updateTask = async (id: string, task: IUpdateTask) => {
+    try {
+      await updateTaskRequest(id, task);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -58,7 +85,9 @@ export const TasksProvider = ({ children }: TasksProviderProps) => {
   };
 
   return (
-    <TasksContext.Provider value={{ tasks, createTask, getTasks, deleteTask }}>
+    <TasksContext.Provider
+      value={{ tasks, createTask, getTasks, getTask, updateTask, deleteTask }}
+    >
       {children}
     </TasksContext.Provider>
   );
