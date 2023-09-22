@@ -5,10 +5,11 @@ import {
   deleteTaskRequest,
 } from "../api/tasks";
 import ITask from "../contracts/ITask";
+import ICreateTask from "../contracts/tasks/ICreateTask";
 
 export interface TasksContextProps {
   tasks: ITask[];
-  createTask: (task: ITask) => void;
+  createTask: (task: ICreateTask) => Promise<void>;
   getTasks: () => void;
   deleteTask: (id: string) => void;
 }
@@ -32,8 +33,8 @@ export const useTasks = () => {
 export const TasksProvider = ({ children }: TasksProviderProps) => {
   const [tasks, setTasks] = useState<ITask[]>([]);
 
-  const createTask = async (task: ITask) => {
-    const res = await createTaskRequest(task);
+  const createTask = async (task: ICreateTask) => {
+    await createTaskRequest(task);
   };
 
   const getTasks = async () => {
