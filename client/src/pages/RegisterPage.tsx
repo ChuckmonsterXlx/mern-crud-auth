@@ -25,9 +25,9 @@ function RegisterPage() {
 
   return (
     <div className="flex h-[calc(100vh-100px)] items-center justify-center">
-      <div className="bg-zinc-800 max-w-md w-full p-10 rounded-md">
+      <div className="w-full max-w-md p-10 rounded-md bg-zinc-800">
         {registerErrors?.map((error, i) => (
-          <div className="bg-red-500 p-2 text-white text-center" key={i}>
+          <div className="p-2 text-center text-white bg-red-500" key={i}>
             {error}
           </div>
         ))}
@@ -36,7 +36,7 @@ function RegisterPage() {
           <input
             type="text"
             {...register("username", { required: true })}
-            className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md my-2"
+            className="w-full px-4 py-2 my-2 text-white rounded-md bg-zinc-700"
             placeholder="Username"
           />
           {errors.username && (
@@ -46,7 +46,7 @@ function RegisterPage() {
           <input
             type="email"
             {...register("email", { required: true })}
-            className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md my-2"
+            className="w-full px-4 py-2 my-2 text-white rounded-md bg-zinc-700"
             placeholder="Email"
           />
           {errors.email && <p className="text-red-500">Email is required</p>}
@@ -54,17 +54,22 @@ function RegisterPage() {
           <input
             type="password"
             {...register("password", { required: true })}
-            className="w-full bg-zinc-700 text-white px-4 py-2 rounded-md my-2"
+            className="w-full px-4 py-2 my-2 text-white rounded-md bg-zinc-700"
             placeholder="Password"
           />
           {errors.password && (
             <p className="text-red-500">Password is required</p>
           )}
 
-          <button type="submit">Register</button>
+          <button
+            className="px-4 py-2 my-2 text-white rounded-md bg-sky-500 hover:bg-sky-600"
+            type="submit"
+          >
+            Register
+          </button>
         </form>
 
-        <p className="flex gap-x-2 justify-between">
+        <p className="flex justify-between gap-x-2">
           Already have an account?{" "}
           <Link to="/login" className="text-sky-500">
             Login
