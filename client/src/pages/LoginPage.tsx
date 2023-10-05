@@ -50,7 +50,12 @@ function LoginPage() {
             <p className="text-red-500">Password is required</p>
           )}
 
-          <button type="submit">Login</button>
+          <button
+            className="px-4 py-2 my-2 text-white rounded-md bg-sky-500 hover:bg-sky-600"
+            type="submit"
+          >
+            Login
+          </button>
         </form>
 
         <p className="flex justify-between gap-x-2">
